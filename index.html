@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Document</title>
+</head>
+<body>
+    
+    <div class="relative w-60 h-72 mx-auto flex">
+        <img class="rotate-45 absolute opacity-100" src="https://www.svgrepo.com/show/162003/resistor.svg" alt="">
+        <div class="absolute inset-y-20 inset-x-9 gap-x-3 flex">
+            <button type="button" class="btn relative h-20 bg-white px-3 py-2  shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-black" id="btn-0" aria-expanded="true" aria-haspopup="true"></button>
+            <button type="button" class="btn relative h-20  bg-white px-3 py-2  shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-black" id="btn-1" aria-expanded="true" aria-haspopup="true"></button>
+            <button type="button" class="btn inset-y-4 inset-x-1 relative inline-flex h-14 bg-white px-3 py-2  shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-black" id="btn-2" aria-expanded="true" aria-haspopup="true"></button>
+            <button type="button" class="btn inset-y-0.5 inset-x-1.5 relative h-20  bg-white px-3 py-2  shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-black" id="btn-3" aria-expanded="true" aria-haspopup="true"></button>
+            <button type="button" class="btn inset-y-0.5 inset-x-1.5 relative h-20 bg-white px-3 py-2  shadow-sm ring-1 ring-inset ring-gray-300 hover:ring-black" id="btn-4" aria-expanded="true" aria-haspopup="true"></button>
+        </div>
+        <div id="drop" hidden class="min-h-full absolute right-0 z-10 mt-2 w-56  border-black border-2 bg-gray-100">
+            <div id="colors">
+              <a href="#" class="bg-black hover:border-2 block px-4 py-4 text-center text-white text-lg font-bold" id="0">0</a>
+              <a href="#" class="bg-orange-950 hover:border-2 block px-4 py-4 text-center text-white text-lg font-bold" id="1">1</a>
+              <a href="#" class="bg-red-700 hover:border-2 block px-4 py-4 text-center text-lg font-bold" id="2">2</a>
+              <a href="#" class="bg-orange-500 hover:border-2 block px-4 py-4 text-center text-lg font-bold" id="3">3</a>
+              <a href="#" class="bg-yellow-400 hover:border-2 block px-4 py-4 text-center text-lg font-bold" id="4">4</a>
+              <a href="#" class="bg-green-700 hover:border-2 block px-4 py-4 text-center text-lg font-bold" id="5">5</a>
+              <a href="#" class="bg-blue-700 hover:border-2 block px-4 py-4 text-center text-lg font-bold" id="6">6</a>
+              <a href="#" class="bg-purple-700 hover:border-2 block px-4 py-4 text-center text-lg font-bold" id="7">7</a>
+              <a href="#" class="bg-gray-500 hover:border-2 block px-4 py-4 text-center text-lg font-bold" id="8">8</a>
+              <a href="#" class="bg-white hover:border-black hover:border-2 block px-4 py-4 text-center text-lg font-bold" id="9">9</a>
+              <a href="#" class="bg-yellow-200 hover:border-black hover:border-2 block px-4 py-4 text-center text-lg font-bold" id="10">10</a>
+              <a href="#" class="bg-gray-200 hover:border-black hover:border-2 block px-4 py-4 text-center text-lg font-bold" id="11">11</a>
+            </div>
+          </div>
+          <div id="result" class="relative w-60 mx-auto text-center text-4xl self-end font-bold">0 Ом ±0%</div>
+    </div>
+    
+    <script>
+
+        let first = 0;
+        let second = 0;
+        let third = 0;
+        let multiplier = 0;
+        let error = 0;
+        let errors = [null,1,2,null,null,0.5,0.25,0.1,0.05,null,5,10];
+
+        let buttons = document.getElementsByClassName("btn");
+        let colors = document.getElementsByTagName("a");
+        let focused;
+        for (let btn of buttons){
+            btn.addEventListener("click",function(){
+            switch(btn.id){
+                case "btn-0":{
+                    colors[0].classList.add("hidden");
+                    colors[10].classList.add("hidden");
+                    colors[11].classList.add("hidden");
+                    break;
+                }
+                case "btn-1":{
+                    colors[10].classList.add("hidden");
+                    colors[11].classList.add("hidden");
+                    break;
+                }
+                case "btn-2":{
+                    colors[0].classList.add("hidden");
+                    colors[10].classList.add("hidden");
+                    colors[11].classList.add("hidden");
+                    break;
+                }
+                case "btn-3":{
+                    colors[9].classList.add("hidden");
+                    colors[8].classList.add("hidden");
+                    for (let color of colors){
+                        if (color.id<10){
+                            color.innerHTML=Math.pow(10,color.id);
+                        } else if (color.id==10) {
+                            color.innerHTML = 0.1;
+                        } else {
+                            color.innerHTML = 0.01;
+                        }
+                    }
+                    break;
+                }
+                case "btn-4":{
+                    colors[0].classList.add("hidden");
+                    colors[3].classList.add("hidden");
+                    colors[4].classList.add("hidden");
+                    colors[9].classList.add("hidden");
+                    for (let color of colors){
+                        color.innerHTML = errors[color.id];
+                    }
+                }
+            }
+            document.getElementById("drop").toggleAttribute("hidden")
+            focused = btn;
+            })
+        }
+
+        
+        for (let color of colors){
+            color.addEventListener("click",function(){
+            let computed = window.getComputedStyle(color);
+            document.getElementById("drop").toggleAttribute("hidden")
+            for (let color of colors){
+                if (color.classList.contains("hidden")){
+                    color.classList.remove("hidden");
+                }
+            }
+            
+            focused.style.backgroundColor = computed.backgroundColor;
+            
+            switch(focused.id){
+                case "btn-0":{
+                    first = color.id;
+                    break;
+                }
+                case "btn-1":{
+                    second = color.id;
+                    break;
+                }
+                case "btn-2":{
+                    third = color.id;
+                    break;
+                }
+                case "btn-3":{
+                    if (color.id<10){
+                        multiplier=Math.pow(10,color.id);
+                    } else if (color.id==10) {
+                        multiplier = 0.1;
+                    } else {
+                        multiplier = 0.01;
+                    }
+                    break;
+                }
+                case "btn-4":{
+                    error=errors[color.id];
+                }
+            }
+            let result = (first+second+third)*multiplier;
+            result = result.toFixed(2);
+            document.getElementById("result").innerHTML=`${result} Ом ±${error}%`;
+            for (let color of colors){
+                color.innerHTML=color.id;
+            }
+            })
+            
+        }
+
+    </script>
+</body>
+</html>
