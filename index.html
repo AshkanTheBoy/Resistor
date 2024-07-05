@@ -38,19 +38,19 @@
     
     <script>
 
-        let first = 0;
-        let second = 0;
-        let third = 0;
-        let multiplier = 0;
-        let error = 0;
-        let errors = [null,1,2,null,null,0.5,0.25,0.1,0.05,null,5,10];
+        let first = 0; //цифра 1
+        let second = 0; //цифра 2
+        let third = 0; //цифра 3
+        let multiplier = 0; //множитель
+        let error = 0; //погрешность
+        let errors = [null,1,2,null,null,0.5,0.25,0.1,0.05,null,5,10]; //массив погрешностей для каждого цвета
 
-        let buttons = document.getElementsByClassName("btn");
-        let colors = document.getElementsByTagName("a");
-        let focused;
+        let buttons = document.getElementsByClassName("btn"); //кнопки(маркеры)
+        let colors = document.getElementsByTagName("a"); //цвета в меню
+        let focused; //кнопка, к которой применяются изменения
         for (let btn of buttons){
             btn.addEventListener("click",function(){
-            switch(btn.id){
+            switch(btn.id){ //прячем из меню цвета, неподходящие для маркера
                 case "btn-0":{
                     colors[0].classList.add("hidden");
                     colors[10].classList.add("hidden");
@@ -71,7 +71,8 @@
                 case "btn-3":{
                     colors[9].classList.add("hidden");
                     colors[8].classList.add("hidden");
-                    for (let color of colors){
+                    //задаем величину множителя на цветах вместо порядкового номера
+                    for (let color of colors){ 
                         if (color.id<10){
                             color.innerHTML=Math.pow(10,color.id);
                         } else if (color.id==10) {
@@ -87,12 +88,15 @@
                     colors[3].classList.add("hidden");
                     colors[4].classList.add("hidden");
                     colors[9].classList.add("hidden");
+                    //задаем погрешность для каждого цвета
                     for (let color of colors){
                         color.innerHTML = errors[color.id];
                     }
                 }
             }
+            //показываем меню цветов
             document.getElementById("drop").toggleAttribute("hidden")
+            //присваиваем текущую кнопку к "целевой"
             focused = btn;
             })
         }
@@ -100,16 +104,19 @@
         
         for (let color of colors){
             color.addEventListener("click",function(){
+                //получаем цвет ссылки меню
             let computed = window.getComputedStyle(color);
+            //прячем меню
             document.getElementById("drop").toggleAttribute("hidden")
+            //восстанавливаем цвета в меню, если некоторые спрятаны
             for (let color of colors){
                 if (color.classList.contains("hidden")){
                     color.classList.remove("hidden");
                 }
             }
-            
+            //красим кнопку в цвет выбранной ссылки
             focused.style.backgroundColor = computed.backgroundColor;
-            
+            //присваиваем значения в зависимости от кнопки
             switch(focused.id){
                 case "btn-0":{
                     first = color.id;
@@ -123,6 +130,8 @@
                     third = color.id;
                     break;
                 }
+                //множитель получается из 10 в степени "порядковый номер цвета"
+                //кроме 10-го и 11-го
                 case "btn-3":{
                     if (color.id<10){
                         multiplier=Math.pow(10,color.id);
@@ -133,13 +142,20 @@
                     }
                     break;
                 }
+                //погрешность берем из массива погрешностей
+                //нулл значения, чтобы совпадали с номером цвета
                 case "btn-4":{
                     error=errors[color.id];
                 }
             }
+            //считаем сопротивление
             let result = (first+second+third)*multiplier;
+            //здесь сделал, чтобы избежать чисел типа 3.0000000000001
+            //в общем - фиксим ошибку округления
             result = result.toFixed(2);
+            //вставляем результаты в страницу
             document.getElementById("result").innerHTML=`${result} Ом ±${error}%`;
+            //восстанавливаем порядковые номера в меню цветов
             for (let color of colors){
                 color.innerHTML=color.id;
             }
